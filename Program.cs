@@ -1,6 +1,8 @@
 ﻿using System;
+
 class Program
 {
+
     public static void Main()
     {
         List<Clasters> clasters = new List<Clasters>();
@@ -29,8 +31,8 @@ class Program
 
 public static class FilesWork
 {
-    private const string pathFat = "..FAT.txt";
-    private const string pathCla = "..Clasters.txt";
+    private const string pathFat = "C:\\Users\\ksysh\\source\\repos\\FilesManager\\FAT.txt";
+    private const string pathCla = "C:\\Users\\ksysh\\source\\repos\\FilesManager\\Clasters.txt";
 
     public static void ReadFile(ref List<Clasters> clasters, ref List<Files> files)
     {
@@ -63,7 +65,7 @@ public static class FilesWork
                 string[] lines = line.Split(':');
                 name = char.Parse(lines[0]);
                 firstClaster = Int32.Parse(lines[1]);
-                clastersList.Add(clasters[firstClaster]);
+                clastersList.Add(clasters[firstClaster - 1]);
                 files.Add(new Files(name, clastersList));
             }
         }
@@ -86,7 +88,7 @@ public class Clasters
 {
     public int numberClaster = 0;
     public Object numberNextClaster = 0;
-    private const int COUNT_CLASTERS = 50;
+    private const int COUNT_CLASTERS = 27;
     public Clasters(int nC, Object nNC)
     {
         numberClaster = nC;
@@ -94,14 +96,14 @@ public class Clasters
     }
     public static Clasters FindClaster(int number, List<Clasters> cl)
     {
-        return cl[number];
+        return cl[number - 1];
     }
     public static void CheckMissedClasters(List<Clasters> cl, ref List<Files> f)
     {
         foreach (Clasters clast in cl)
         {
             bool check = false;
-            if ((clast.numberNextClaster != null) && !(clast.numberNextClaster.Equals("bad")))
+            if ((clast.numberNextClaster != null) && !(clast.numberNextClaster.Equals("bad")) && !(clast.numberNextClaster.Equals("eof")))
             {
                 foreach (Files files in f)
                 {
@@ -159,7 +161,7 @@ public class Clasters
                     files.clasters[index] = EmptyClaster(allUsedClasters, cl);
                     files.clasters[index].numberNextClaster = next;
                     if (index > 0)
-                        cl[files.clasters[index - 1].numberClaster].numberNextClaster = files.clasters[index].numberClaster;
+                        cl[files.clasters[index - 1].numberClaster - 1].numberNextClaster = files.clasters[index].numberClaster;
                     allUsedClasters.Add(files.clasters[index]);
                 }
                 distinctUsedClasters.Add(files.clasters[index]);
@@ -189,8 +191,7 @@ public class Clasters
                     Clasters empty = EmptyClaster(allUsedClasters, cl);
                     empty.numberNextClaster = "eof";
                     files.clasters[index] = empty;
-                    cl[files.clasters[index].numberClaster] = empty;
-                    cl[files.clasters[index - 1].numberClaster].numberNextClaster = empty.numberClaster;
+                    cl[files.clasters[index].numberClaster - 1] = empty;
                 }
             }
         }
@@ -228,7 +229,7 @@ public class Files
         int nextCl = 0;
         Clasters t = f.clasters[0];
         Object next = t.numberNextClaster;
-        while ((!next.Equals("eof")) && (!next.Equals("bad")))
+        while (!next.Equals("eof"))
         {
             nextCl = Convert.ToInt32(next);
             Clasters nextClaster = Clasters.FindClaster(nextCl, cl);
